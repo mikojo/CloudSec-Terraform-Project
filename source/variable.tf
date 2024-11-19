@@ -1,5 +1,5 @@
 variable "region" {
-  default = "us-east-2"
+  default = "us-east-1"
 }
 
 variable "vpc_cidr" {
@@ -7,37 +7,37 @@ variable "vpc_cidr" {
 }
 
 variable "vpc_name" {
-  default = "cloudsec_vpc"
+  default = "capstone_vpc"
 }
 
 variable "subnetnames" {
-  default = ["wp_private_sn1", "wp_public_sn1", "wp_public_sn2", "wp_private_sn2"]
+  default = ["capstone-private-sn1", "capstone-public-sn1", "capstone-public-sn2", "capstone-private-sn2"]
   type    = list(any)
 }
 
-variable "subnet1_cidr" {
+variable "capstone-public-subnet1" {
   default = "10.0.1.0/24"
 }
 
-variable "subnet2_cidr" {
+variable "capstone-private-subnet1" {
   default = "10.0.2.0/24"
 }
 
-variable "subnet3_cidr" {
+variable "capstone-public-subnet2" {
   default = "10.0.3.0/24"
 }
 
-variable "subnet4_cidr" {
+variable "capstone-private-subnet2" {
   default = "10.0.4.0/24"
 }
 
 variable "az" {
-  default = ["us-east-2a", "us-east-2b"]
+  default = ["us-east-1a", "us-east-1b"]
   type    = list(any)
 }
 
 variable "internet_gateway_name" {
-  default = "cloudsec_igw"
+  default = "capstone_igw"
 }
 
 
@@ -53,12 +53,12 @@ variable "public_access" {
 
 variable "rds_identifier" {
   type    = string
-  default = "cloudsec"
+  default = "capstone"
 }
 
 variable "rds_db_name" {
   type    = string
-  default = "cloudsec_db"
+  default = "capstone_db"
 }
 
 variable "database_username" {
@@ -83,18 +83,18 @@ variable "ecs_task_execution_role" {
   default = "arn:aws:iam::431877974142:role/ecsTaskExecutionRole"
 }*/
 
-variable "target_group_name" {
+variable "target-group-name" {
   type    = string
-  default = "cloudsec-alb-group"
+  default = "capstone-alb-group"
 }
 
-variable "elb_name" {
+variable "elb-name" {
   type    = string
-  default = "cloudsec-alb"
+  default = "capstone-alb"
 }
 
 
-variable "elb_type" {
+variable "elb-type" {
   default = "application"
   type    = string
 }
@@ -104,17 +104,17 @@ variable "certificate_arn" {
   default = "arn:aws:acm:us-east-2:431877974142:certificate/554b507e-65b1-4194-bc68-05293aa55694"
 }
 
-variable "aws_efs_access_point" {
+variable "capstone-access-pt" {
   type    = string
-  default = "cloudsec_efs_access_point"
+  default = "capstone-efs-access-point"
 }
 
-variable "ecs_service_name" {
-  default = "ecs_cloudsec-service"
+variable "ecs-service-name" {
+  default = "ecs-capstone-service"
   type    = string
 }
 
-variable "listener_forward_type" {
+variable "listener-forward-type" {
   default = "forward"
 }
 

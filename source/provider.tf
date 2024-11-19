@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region
+  region = var.region 
 }
 
 terraform {
@@ -13,8 +13,8 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket = "cloudsec-terraform-project"
+    bucket = "cloudsec-capstone-project"
     key    = "infra/terraform.tfstate"
-    region = "us-east-2"
+    region = "us-east-1"
   }
 }

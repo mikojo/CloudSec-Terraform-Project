@@ -1,4 +1,4 @@
-resource "aws_vpc" "cloudsec" {
+resource "aws_vpc" "capstone-vpc" {
   cidr_block = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -7,27 +7,27 @@ resource "aws_vpc" "cloudsec" {
   }
 }
 
-resource "aws_subnet" "public_sn1" {
-  vpc_id            = aws_vpc.cloudsec.id
-  cidr_block        = var.subnet1_cidr
+resource "aws_subnet" "capstone-public-subnet1" {
+  vpc_id            = aws_vpc.capstone-vpc.id
+  cidr_block        = var.capstone-public-subnet1
   availability_zone = var.az[0]
   tags = {
     Name = var.subnetnames[1]
   }
 }
 
-resource "aws_subnet" "public_sn2" {
-  vpc_id            = aws_vpc.cloudsec.id
-  cidr_block        = var.subnet3_cidr
+resource "aws_subnet" "capstone-public-subnet2" {
+  vpc_id            = aws_vpc.capstone-vpc.id
+  cidr_block        = var.capstone-public-subnet2
   availability_zone = var.az[1]
   tags = {
     Name = var.subnetnames[2]
   }
 }
 
-resource "aws_subnet" "private_sn1" {
-  vpc_id            = aws_vpc.cloudsec.id
-  cidr_block        = var.subnet4_cidr
+resource "aws_subnet" "capstone-private-subnet1" {
+  vpc_id            = aws_vpc.capstone-vpc.id
+  cidr_block        = var.capstone-private-subnet1
   availability_zone = var.az[0]
   tags = {
     Name = var.subnetnames[0]
@@ -35,9 +35,9 @@ resource "aws_subnet" "private_sn1" {
 }
 
 
-resource "aws_subnet" "private_sn2" {
-  vpc_id            = aws_vpc.cloudsec.id
-  cidr_block        = var.subnet2_cidr
+resource "aws_subnet" "capstone-private-subnet2" {
+  vpc_id            = aws_vpc.capstone-vpc.id
+  cidr_block        = var.capstone-private-subnet2
   availability_zone = var.az[1]
   tags = {
     Name = var.subnetnames[3]
@@ -45,43 +45,43 @@ resource "aws_subnet" "private_sn2" {
 }
 
 
-resource "aws_route_table" "private-route-table" {
-  vpc_id = aws_vpc.cloudsec.id
+resource "aws_route_table" "capstone-private-route-table" {
+  vpc_id = aws_vpc.capstone-vpc.id
   tags = {
-    Name = "wp-private-route-table"
+    Name = "capstone-private-route-table"
   }
 }
 
 
-resource "aws_route_table" "public-route-table" {
-  vpc_id = aws_vpc.cloudsec.id
+resource "aws_route_table" "capstone-public-route-table" {
+  vpc_id = aws_vpc.capstone-vpc.id
   tags = {
-    Name = "wp-public-route-table"
+    Name = "capstone-public-route-table"
   }
 }
 
-resource "aws_route_table_association" "public_sn1_association" {
-  subnet_id      = aws_subnet.public_sn1.id
-  route_table_id = aws_route_table.public-route-table.id
+resource "aws_route_table_association" "capstone-public-subnet1-association" {
+  subnet_id      = aws_subnet.capstone-public-subnet1.id
+  route_table_id = aws_route_table.capstone-public-route-table.id
 }
 
-resource "aws_route_table_association" "public_sn2_association" {
-  subnet_id      = aws_subnet.public_sn2.id
-  route_table_id = aws_route_table.public-route-table.id
+resource "aws_route_table_association" "capstone-public-subnet2-association" {
+  subnet_id      = aws_subnet.capstone-public-subnet2.id
+  route_table_id = aws_route_table.capstone-public-route-table.id
 }
 
-resource "aws_route_table_association" "private_sn1_association" {
-  subnet_id      = aws_subnet.private_sn1.id
-  route_table_id = aws_route_table.private-route-table.id
+resource "aws_route_table_association" "capstone-private-subnet1-association" {
+  subnet_id      = aws_subnet.capstone-private-subnet1.id
+  route_table_id = aws_route_table.capstone-private-route-table.id
 }
 
-resource "aws_route_table_association" "private_sn2_association" {
-  subnet_id      = aws_subnet.private_sn2.id
-  route_table_id = aws_route_table.private-route-table.id
+resource "aws_route_table_association" "capstone-private-subnet2-association" {
+  subnet_id      = aws_subnet.capstone-private-subnet2.id
+  route_table_id = aws_route_table.capstone-private-route-table.id
 }
 
-resource "aws_internet_gateway" "internet-gw" {
-  vpc_id = aws_vpc.cloudsec.id
+resource "aws_internet_gateway" "capstone-internet-gw" {
+  vpc_id = aws_vpc.capstone-vpc.id
 
   tags = {
     Name = var.internet_gateway_name
@@ -89,9 +89,9 @@ resource "aws_internet_gateway" "internet-gw" {
 }
 
 resource "aws_route" "public-route-table-route-for-igw" {
-  route_table_id         = aws_route_table.public-route-table.id
+  route_table_id         = aws_route_table.capstone-public-route-table.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.internet-gw.id
+  gateway_id             = aws_internet_gateway.capstone-internet-gw.id
 }
 
 
@@ -121,7 +121,7 @@ resource "aws_route" "private-route-table-route-for-nat-gw" {
 resource "aws_security_group" "rds_security_group" {
   name        = "rds_security_group"
   description = "security group for rds"
-  vpc_id      = aws_vpc.cloudsec.id
+  vpc_id      = aws_vpc.capstone-vpc.id
 
   ingress {
     from_port       = var.web_ports[0]
@@ -135,7 +135,7 @@ resource "aws_security_group" "rds_security_group" {
 resource "aws_security_group" "ecs_security_group" {
   name        = "ecs_security_group"
   description = "security group for ecs"
-  vpc_id      = aws_vpc.cloudsec.id
+  vpc_id      = aws_vpc.capstone-vpc.id
 
   ingress {
     from_port       = var.web_ports[2]
@@ -202,7 +202,7 @@ resource "aws_security_group" "ecs_security_group" {
 resource "aws_security_group" "efs_security_group" {
   name        = "efs_sg"
   description = "route traffic to ecs security group"
-  vpc_id      = aws_vpc.cloudsec.id
+  vpc_id      = aws_vpc.capstone-vpc.id
 
   ingress {
     from_port   = var.web_ports[1]
@@ -216,7 +216,7 @@ resource "aws_security_group" "efs_security_group" {
 resource "aws_security_group" "elb_security_group" {
   name        = "elb_sg"
   description = "route traffic to ecs"
-  vpc_id      = aws_vpc.cloudsec.id
+  vpc_id      = aws_vpc.capstone-vpc.id
 
   ingress {
     from_port   = 0
@@ -252,16 +252,16 @@ resource "aws_ssm_parameter" "database_username" {
   value = var.database_username
 }*/
 
-resource "aws_db_subnet_group" "cloudsec_subnet_group" {
-  name       = "cloudsec_subnet_group"
-  subnet_ids = [aws_subnet.private_sn1.id, aws_subnet.private_sn2.id]
+resource "aws_db_subnet_group" "capstone-subnet-group" {
+  name       = "capstone-subnet-group"
+  subnet_ids = [aws_subnet.capstone-private-subnet1.id, aws_subnet.capstone-private-subnet2.id]
                  
   tags = {
-    Name = "Cloudsec subnet group"
+    Name = "capstone-subnet-group"
   }
 }
 
-resource "aws_db_instance" "cloudsec_rds" {
+resource "aws_db_instance" "capstone-rds" {
   allocated_storage                   = 20
   identifier                          = var.rds_identifier
   db_name                             = var.rds_db_name
@@ -272,7 +272,7 @@ resource "aws_db_instance" "cloudsec_rds" {
   password                            = aws_ssm_parameter.database_password.value
   port                                = "3306"
   storage_type                        = "gp3"
-  db_subnet_group_name                = "cloudsec_subnet_group"
+  db_subnet_group_name                = "capstone-subnet-group"
   vpc_security_group_ids              = [aws_security_group.rds_security_group.id]
   skip_final_snapshot                 = true
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
@@ -281,42 +281,42 @@ resource "aws_db_instance" "cloudsec_rds" {
 }
 
 
-resource "aws_efs_file_system" "cloudsec_efs" {
+resource "aws_efs_file_system" "capstone-efs" {
   encrypted      =  true
     tags = {
-    Name = "cloudsec_efs"
+    Name = "capstone-fs"
   }
 }
 
-resource "aws_efs_mount_target" "cloudsec_efs_mt1" {
-  file_system_id = aws_efs_file_system.cloudsec_efs.id
-  subnet_id      = aws_subnet.private_sn1.id
+resource "aws_efs_mount_target" "capstone-efs-mt1" {
+  file_system_id = aws_efs_file_system.capstone-efs.id
+  subnet_id      = aws_subnet.capstone-private-subnet1.id
   security_groups = [ aws_security_group.efs_security_group.id ]
 }
 
-resource "aws_efs_mount_target" "cloudsec_efs_mt2" {
-  file_system_id = aws_efs_file_system.cloudsec_efs.id
-  subnet_id      = aws_subnet.private_sn2.id
+resource "aws_efs_mount_target" "capstone-efs-mt2" {
+  file_system_id = aws_efs_file_system.capstone-efs.id
+  subnet_id      = aws_subnet.capstone-private-subnet2.id
   security_groups = [ aws_security_group.efs_security_group.id ]
   }
 
 
 
-resource "aws_efs_access_point" "cloudsec_access_pt" {
-  file_system_id = aws_efs_file_system.cloudsec_efs.id
+resource "aws_efs_access_point" "capstone-access-pt" {
+  file_system_id = aws_efs_file_system.capstone-efs.id
 
   tags = {
-    name        = var.aws_efs_access_point
+    name        = var.capstone-access-pt
     description = "Allow access to EFS"
   }
 }
 
-resource "aws_ecs_cluster" "cloudsec_cluster" {
-  name = "cloudsec_cluster"
+resource "aws_ecs_cluster" "capstone-cluster" {
+  name = "capstone-cluster"
 }
 
-resource "aws_ecs_cluster_capacity_providers" "cloudsec_cluster_capacity" {
-  cluster_name = aws_ecs_cluster.cloudsec_cluster.name
+resource "aws_ecs_cluster_capacity_providers" "capstone-cluster-capacity" {
+  cluster_name = aws_ecs_cluster.capstone-cluster.name
 
   capacity_providers = ["FARGATE"]
 
@@ -327,13 +327,13 @@ resource "aws_ecs_cluster_capacity_providers" "cloudsec_cluster_capacity" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "cloudsec_ecs_logs" {
-  name = "/ecs/cloudsec_logs"
+resource "aws_cloudwatch_log_group" "capstone-ecs-logs" {
+  name = "/ecs/capstone-logs"
 
 }
 
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecs_task_execution_role1"
+resource "aws_iam_role" "ecs-task-execution-role" {
+  name = "ecs-task-execution-role1"
  
   assume_role_policy = <<EOF
 {
@@ -352,8 +352,8 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 EOF
 }
 
-resource "aws_iam_role" "ecs_task_role" {
-  name = "ecs_task_role1"
+resource "aws_iam_role" "ecs-task-role" {
+  name = "ecs-task-role1"
  
   assume_role_policy = <<EOF
 {
@@ -373,20 +373,20 @@ EOF
 }
  
 resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
-  role       = aws_iam_role.ecs_task_role.name
+  role       = aws_iam_role.ecs-task-role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
-  role       = aws_iam_role.ecs_task_execution_role.name
+  role       = aws_iam_role.ecs-task-execution-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 
 }
 
-resource "aws_ecs_task_definition" "cloudsec_task_definition" {
-  family                   = "cloudsec_family"
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+resource "aws_ecs_task_definition" "capstone-task-definition" {
+  family                   = "capstone-family"
+  task_role_arn            = aws_iam_role.ecs-task-role.arn
+  execution_role_arn       = aws_iam_role.ecs-task-execution-role.arn
   network_mode             = "awsvpc"
   cpu                      = "1024"
   memory                   = "3072"
@@ -408,8 +408,8 @@ resource "aws_ecs_task_definition" "cloudsec_task_definition" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-region        = "us-east-2",
-          awslogs-group         = "/ecs/cloudsec_logs",
+          awslogs-region        = "us-east-1",
+          awslogs-group         = "/ecs/capstone-logs",
           awslogs-stream-prefix = "ecs",
           awslogs-create-group  = "true"                # Ensure the log group is created automatically if it doesn't exist
         }
@@ -417,7 +417,7 @@ resource "aws_ecs_task_definition" "cloudsec_task_definition" {
       environment = [
         {
           name  = "WORDPRESS_DB_HOST",
-          value = aws_db_instance.cloudsec_rds.endpoint
+          value = aws_db_instance.capstone-rds.endpoint
         },
         {
           name  = "WORDPRESS_DB_USER",
@@ -436,15 +436,15 @@ resource "aws_ecs_task_definition" "cloudsec_task_definition" {
   ])
 
   volume {
-    name = "cloudsec_efs_volume"
+    name = "capstone-efs-volume"
 
     efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.cloudsec_efs.id
+      file_system_id          = aws_efs_file_system.capstone-efs.id
       root_directory          = "/"
       transit_encryption      = "ENABLED"
       transit_encryption_port = 2049
       authorization_config {
-        access_point_id = aws_efs_access_point.cloudsec_access_pt.id
+        access_point_id = aws_efs_access_point.capstone-access-pt.id
         iam             = "ENABLED"
       }
     }
@@ -452,12 +452,12 @@ resource "aws_ecs_task_definition" "cloudsec_task_definition" {
 }
 
 
-resource "aws_lb_target_group" "cloudsec_target_group" {
-  name        = var.target_group_name
+resource "aws_lb_target_group" "capstone-target-group" {
+  name        = var.target-group-name
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.cloudsec.id
+  vpc_id      = aws_vpc.capstone-vpc.id
 
   health_check {
     path     = "/wp-admin/install.php"
@@ -466,12 +466,12 @@ resource "aws_lb_target_group" "cloudsec_target_group" {
 }
 
 
-resource "aws_lb" "cloudsec_elb" {
-  name               = var.elb_name
+resource "aws_lb" "capstone-elb" {
+  name               = var.elb-name
   internal           = false
-  load_balancer_type = var.elb_type
+  load_balancer_type = var.elb-type
   security_groups    = [aws_security_group.elb_security_group.id]
-  subnets            = [aws_subnet.public_sn1.id, aws_subnet.public_sn2.id]
+  subnets            = [aws_subnet.capstone-public-subnet1.id, aws_subnet.capstone-public-subnet2.id]
 
   enable_deletion_protection = false
 
@@ -480,59 +480,59 @@ resource "aws_lb" "cloudsec_elb" {
   }
 }
 
-resource "aws_lb_listener" "cloudsec_listener" {
-  load_balancer_arn = aws_lb.cloudsec_elb.arn
+resource "aws_lb_listener" "capstone-listener" {
+  load_balancer_arn = aws_lb.capstone-elb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type             = var.listener_forward_type
-    target_group_arn = aws_lb_target_group.cloudsec_target_group.arn
+    type             = var.listener-forward-type
+    target_group_arn = aws_lb_target_group.capstone-target-group.arn
   }
 }
 
-resource "aws_lb_listener" "cloudsec_listener_SSL" {
-  load_balancer_arn = aws_lb.cloudsec_elb.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  certificate_arn   = var.certificate_arn
+# resource "aws_lb_listener" "capstone-listener-SSL" {
+#   load_balancer_arn = aws_lb.capstone-elb.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   certificate_arn   = var.certificate_arn
 
-  default_action {
-    type             = var.listener_forward_type
-    target_group_arn = aws_lb_target_group.cloudsec_target_group.arn
-  }
-}
+#   default_action {
+#     type             = var.listener-forward-type
+#     target_group_arn = aws_lb_target_group.capstone-target-group.arn
+#   }
+# }
 
-resource "aws_ecs_service" "cloudsec_service" {
-  name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.cloudsec_cluster.id
-  task_definition = aws_ecs_task_definition.cloudsec_task_definition.arn
+resource "aws_ecs_service" "capstone-service" {
+  name            = var.ecs-service-name
+  cluster         = aws_ecs_cluster.capstone-cluster.id
+  task_definition = aws_ecs_task_definition.capstone-task-definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"
   health_check_grace_period_seconds = 300
 
   network_configuration {
-    subnets         = [aws_subnet.public_sn1.id, aws_subnet.public_sn2.id]
+    subnets         = [aws_subnet.capstone-public-subnet1.id, aws_subnet.capstone-public-subnet2.id]
     security_groups = [aws_security_group.ecs_security_group.id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.cloudsec_target_group.arn
+    target_group_arn = aws_lb_target_group.capstone-target-group.arn
     container_name   = "wordpress"
     container_port   = 80
   }
 }
 
-resource "aws_route53_record" "cloudsec_dns" {
-  zone_id = var.hosted_zone_id
-  allow_overwrite = true
-  name    = "seyramgabriel.com"
-  type    = "A"
+# resource "aws_route53_record" "cloudsec_dns" {
+#   zone_id = var.hosted_zone_id
+#   allow_overwrite = true
+#   name    = "seyramgabriel.com"
+#   type    = "A"
 
-  alias {
-    name                   = aws_lb.cloudsec_elb.dns_name
-    zone_id                = aws_lb.cloudsec_elb.zone_id
-    evaluate_target_health = true
-  }
-}
+#   alias {
+#     name                   = aws_lb.cloudsec_elb.dns_name
+#     zone_id                = aws_lb.cloudsec_elb.zone_id
+#     evaluate_target_health = true
+#   }
+# }
