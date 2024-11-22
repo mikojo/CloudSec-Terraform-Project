@@ -20,7 +20,6 @@ The project involves setting up a complete infrastructure on AWS, managed throug
 
 *  RDS Database: Set up Amazon RDS (MySQL/MariaDB) in a private subnet for the WordPress database.
 
-*  Domain & SSL: Purchase a domain (e.g., .pro, .cloud) and manage it via Route 53. Secure the site with SSL/TLS using AWS Certificate Manager (ACM).
 
 # Deliverables:
 
@@ -36,9 +35,6 @@ The project involves setting up a complete infrastructure on AWS, managed throug
 
 * An AWS Account
 * S3 bucket for terraform backend state files. The bucket name must be unique, so you cannot use what is in this repository
-* Domain name 
-* ACMS certificate for the Domain name 
-
 
 ## Configuration files
 
@@ -99,7 +95,7 @@ mysql -h <rds_endpoint> -u <database_username> -p
 ```
 * The ECS service launches the ecs task definition in public subnets, hence the web application tier is accessible through a public ip, and also through the load balancer, since the ecs security group has ingress for the load balancer security group. 
 
-* The Load Balancer has listeners for both HTTP and HTTPS, this allows access to the application through an A record (alias) created with the registered dns that has ACMS certificate, due to SSL termination.
+* The Load Balancer has listeners for both HTTP and HTTPS. 
 
 * The EFS is mounted in private subnets. 
 
@@ -108,15 +104,14 @@ mysql -h <rds_endpoint> -u <database_username> -p
 
 * git clone the repo 
 ```
-git clone https://github.com/seyramgabriel/CloudSec-Terraform-Project
+git clone https://github.com/mikojo/CloudSec-Terraform-Project.git
 ```
 * move into the source directory
 ```
 cd source/
 ```
-* Open to the variable.tf file and customise the default values (such as resource names, cidr blocks, ACMS certificate) to your choice.
+* Open to the variable.tf file and customise the default values (such as resource names, cidr blocks) to your choice.
 
-* Modify the domain name to your domain name
 
 * Modify the image name from "wordpress:php8.3-apache" to any wordpress image of your choice in the ecs task definition configuraion in vpc-infra.tf file. Note that the wordpress image "wordpress:php8.3-apache" comes with wordpress, php, and apache.
 
@@ -133,35 +128,28 @@ terraform apply
 
 * After all resources are created, there will be an output of the load balancer dns, with which you can browse the wordpress application
 
-![Screenshot (128)](https://github.com/user-attachments/assets/69c24d85-8870-4dd0-aa49-f690752471b0)
+<img width="947" alt="Screenshot 2024-11-21 203254" src="https://github.com/user-attachments/assets/515960d3-7f8c-4936-9f5d-bf231d42ae39">
 
 * You can run ```terraform state list``` to list all resources created:
 
-![Screenshot (126)](https://github.com/user-attachments/assets/c5f198a3-c75a-48f9-bf56-5c883aaac918)
+<img width="470" alt="Screenshot 2024-11-21 203832" src="https://github.com/user-attachments/assets/1afdb6ad-26c7-426f-b4a3-95388c72fcc7">
 
 
-* The wordpress application would be accessible via load balancer dns, your dns name, and the public ip of the container.
+* The wordpress application would be accessible via load balancer dns and the public ip of the container.
 
-Via load balancer dns:
+Via load balancer dns:/
 
-![Screenshot (123)](https://github.com/user-attachments/assets/bd0fb194-ffbd-433f-9972-5a7d6a4321ba)
+<img width="773" alt="Screenshot 2024-11-21 203949" src="https://github.com/user-attachments/assets/89f0fd88-9156-457b-9e80-2a494044b968">
 
-Via dns name:
-
-![Screenshot (124)](https://github.com/user-attachments/assets/8b0f0557-0dee-463f-acf7-564c6b499ef4)
-
-Via public ip:
-
-![Screenshot (125)](https://github.com/user-attachments/assets/d006d860-4628-4161-b43b-10a945ad697a)
 
 
 So you proceed to choose your preferred language, enter your credentials as a user on wordpress and click install, and log in to wordpress, as in the pictures below: 
 
-![Screenshot (149)](https://github.com/user-attachments/assets/2f92f5eb-ea54-4c62-88dc-b9b8bfc2a696)
+![Screenshot 2024-11-21 210057](https://github.com/user-attachments/assets/dc6b6dca-a1d4-42d3-b752-1b83e2277015)
 
-![Screenshot (151)](https://github.com/user-attachments/assets/19c91dee-a2e1-4ca5-b852-d89a896253ed)
+![Screenshot 2024-11-21 234851](https://github.com/user-attachments/assets/7bb3cfa5-134a-4c30-8e93-837191c871fd)
 
-![Screenshot (152)](https://github.com/user-attachments/assets/fbf87dd3-ce2d-47e9-b485-654305e0c919)
+![Screenshot 2024-11-21 210249](https://github.com/user-attachments/assets/5043daa2-c207-490f-a826-0bd7371e6ff6)
 
 * To destroy the resources, run
 ````
@@ -232,6 +220,7 @@ Choose "destroy" and click "Run workflow"
 
 
 ![Cloudsec-terraform-project](https://github.com/user-attachments/assets/d8f213f0-fd7a-4ef0-ab7f-8f1360a48db9)
+
 
 
 
