@@ -156,66 +156,6 @@ So you proceed to choose your preferred language, enter your credentials as a us
 terraform destroy
 ````
 
-## CICD
-
-Pre-requisite:
-* AWS Access and Secret keys                   #___In the absence of a github actions role for openid connect___
-* GitHub actions role for openid connect  (This is optional, but for enhanced security)
-
-
-The repository deploys a CI/CD for the terraform configuration using [action.yml](https://github.com/seyramgabriel/CloudSec-Terraform-Project/blob/main/.github/workflows/action.yml) file, and [oidc.yaml](https://github.com/seyramgabriel/CloudSec-Terraform-Project/blob/main/.github/workflows/oidc.yaml) as alternative, for better security.
-
-
-The github/workflows/action.yml file uses AWS access key and secret key defined in the repository secret to authenticate to the AWS account, whiles .github/workflows/oidc.yaml uses open id connect.
-
-To use open id connect rather than AWS access key and secret key, you can run the terraform configuration in the openid directory as follows:
-
-```
-cd openid
-```
-
-Modify the provider.tf file, ensure you are using your own created bucket and key for backend storage.
-
-Modify the variable.tf file to reflect the region of your choice. The region should be same as is in your oidc file.
-
-Modify the 'repo' from "seyramgabriel/*" to reflect your GitHub user account.
-
-
-* Run 
-```
-terraform validate
-```
-```
-terraform plan
-```
-````
-terraform apply
-````
-
-This will create a role (whose name and arn are quoted in the oidc.yaml file) with a policy that allows for authentication from your GitHub repository into your AWS Account. You would just have to change the AWS account ID in "arn:aws:iam::431877974142:role/GithubActions" in the oidc.yaml file, then you can now use oidc.yaml file to deploy the terraform configuration into your AWS Account.
-
-### How to trigger the workflow
-
-The actions are set to be triggered manually (workflow_dispatch) by choosing either "apply" or "destroy" as inputs as displayed below:
-
-![Screenshot (120)](https://github.com/user-attachments/assets/d773f373-22be-44b8-ab05-6e493d132054)
-
-
-Apply:
-
-Choose "apply" and click "Run workflow"
-
-![Screenshot (118)](https://github.com/user-attachments/assets/ed45f436-9e93-48db-ae48-19826a398de8)
-
-
-Destroy:
-
-Choose "destroy" and click "Run workflow"
-
-![Screenshot (119)](https://github.com/user-attachments/assets/80c347d3-89f0-470d-a679-69886365dd1b)
-
-
-
 ## Project Architecture 
 
 
